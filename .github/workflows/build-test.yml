@@ -17,6 +17,7 @@ jobs:
 
       - name: run unit test
         run: npm run test
+         
   build:
     runs-on: ubuntu-22.04
     name: build cicd-lab
