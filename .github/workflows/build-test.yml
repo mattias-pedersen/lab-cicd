@@ -17,3 +17,28 @@ jobs:
 
       - name: run unit test
         run: npm run test
+  build:
+    runs-on: ubuntu-22.04
+    name: build cicd-lab
+    env:
+      GITHUB_USER: mattias-pedersen
+      GITHUB_REGISTRY: ghcr.io/mattias-pedersen
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-actions@v2
+      - name: Login to docker
+        uses: docker/login-acrtion@v2
+          registry: ghcr.io/mattias-pedersen
+          username: "{{ github.actor }}"
+          password: "{{ github.token }}"
+
+    - name: set env
+      run: |
+        echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "IMAGE_REGISTRY=ghcr.io/mattias-pedersen/lab-cicd" >> $GITHUB_ENV
+
+    - name: build and push
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: "${{ env.IMAGE_REGISTRY }}:${{ env.SHA_SHORT }},${{ env.IMAGE_REGISTRY }}:latest"
